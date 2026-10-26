@@ -15,6 +15,8 @@ Product site: [UE Asset Atlas](https://ue-asset-atlas.rogan2534.chatgpt.site) ·
 - Register existing `/Game/...` StaticMesh, Texture2D and Material object paths in place; registration does not copy those assets.
 - Import a new preview FBX once into the shared plugin Content mount so multiple linked Unreal projects can refer to the same package.
 - Refresh from local JSON manifests and an Unreal Python commandlet. No AI provider call, Tripo call, or API token is needed for the sync step.
+- Apply AI-authored placement manifests in one deterministic pass to a dedicated QA level; cache each distinct mesh, ground instances and reject unintended bounds overlaps.
+- Connect an approved fixed-camera reference-shot manifest to a QA placement and preserve the locked camera/crop for later render comparison.
 
 ## Install on Windows / UE 5.8
 
@@ -45,6 +47,15 @@ For a repeatable headless build and large-catalog QA run (with the target editor
 
 This verifies paging of 5,000 synthetic assets and adaptive preview limits. It does not replace visual in-editor review. See [performance QA](docs/PERFORMANCE_QA.md).
 
+For batched placement, validate a scene layout JSON and apply it to an isolated QA level:
+
+```powershell
+python .\Tools\scene_layout.py --manifest .\examples\scene-layout\layout.json --project .\examples\scene-layout\project.json --catalog .\examples\scene-layout\catalog.json
+.\Tools\apply_scene_layout.ps1 -ProjectFile 'D:\Projects\MyGame\MyGame.uproject' -ManifestPath 'D:\QA\layout.json'
+```
+
+The second command runs only with the target Unreal project closed and only writes under `/Game/Developer/AIPlacementQA/`. See the [scene-layout contract](docs/SCENE_LAYOUT.md). The layout tool applies transform proposals; it does not perform image-to-3D inference. Reference matching needs an approved fixed camera and a rendered candidate for comparison.
+
 See [Windows setup](docs/SETUP_WINDOWS.md) and [AI team workflow](docs/AI_TEAM_WORKFLOW.md) for the full steps.
 
 ## Sharing assets between projects
@@ -68,6 +79,8 @@ Copy the brief in [AI team workflow](docs/AI_TEAM_WORKFLOW.md) into your agent i
 - `Tools/link_shared_plugin.ps1`: preview/apply a shared junction for a closed UE 5.8 project.
 - `Tools/sync_archive_project.ps1`: safe background commandlet guard and sync entry point.
 - `Tools/run_archive_qa.ps1`: optional UE 5.8 build plus headless automation checks for paging and adaptive preview policy.
+- `Tools/scene_layout.py` / `Tools/apply_scene_layout.ps1`: validate and batch-place catalog assets in an isolated QA level; `apply_scene_layout.py` is the UE-side executor.
+- `schemas/scene-layout.schema.json`: units, axes, stable IDs, transforms and optional approved reference shot contract.
 - `Tools/import_archive_assets.py`: generic per-project inbox importer (no bundled user's asset list).
 - `schemas/`, `examples/`, `docs/`: machine-readable contracts, synthetic sample and setup guidance.
 - `Content/SharedAssets/`: local shared assets live here when teams import them; project-specific assets are not bundled in this repository.

@@ -1,0 +1,15 @@
+{
+  "schema": "blacklion.scene-layout.v1",
+  "project_id": "Synthetic_Project",
+  "scene_id": "Gallery_Test_01",
+  "target_level": "/Game/Developer/AIPlacementQA/Gallery_Test_01",
+  "units": "cm",
+  "up_axis": "Z",
+  "ground_plane": "XY",
+  "reference_shot_manifest": null,
+  "reference_status": "none",
+  "instances": [
+    {"instance_id": "crate_left", "asset_id": "TEST_CRATE", "location_cm": [-200, 0, 0], "rotation_deg": [0, 0, 0], "scale": [1, 1, 1], "grounded": true, "orientation_mode": "world_axis_aligned"},
+    {"instance_id": "lamp_right", "asset_id": "TEST_LAMP", "location_cm": [200, 0, 0], "rotation_deg": [0, 0, 0], "scale": [1, 1, 1], "grounded": true, "orientation_mode": "world_axis_aligned"}
+  ]
+}

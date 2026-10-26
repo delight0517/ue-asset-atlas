@@ -1,0 +1,8 @@
+{
+  "schema": "blacklion.asset-archive.project.v1",
+  "project_id": "Synthetic_Project",
+  "display_name": "Synthetic Placement QA",
+  "units": "centimeters",
+  "up_axis": "Z",
+  "ground_plane": "XY"
+}

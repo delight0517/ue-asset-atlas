@@ -1,0 +1,8 @@
+{
+  "schema": "blacklion.asset-archive.catalog.v1",
+  "project_id": "Synthetic_Project",
+  "assets": [
+    {"id": "TEST_CRATE", "project": "Synthetic_Project", "preview_mesh": "/Game/Test/SM_Crate.SM_Crate"},
+    {"id": "TEST_LAMP", "project": "Synthetic_Project", "preview_mesh": "/Game/Test/SM_Lamp.SM_Lamp"}
+  ]
+}

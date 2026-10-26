@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ue-asset-atlas.dev/schemas/scene-layout.schema.json",
+  "title": "UE Asset Atlas Scene Layout",
+  "type": "object",
+  "required": ["schema", "project_id", "scene_id", "target_level", "units", "up_axis", "ground_plane", "instances"],
+  "properties": {
+    "schema": {"const": "blacklion.scene-layout.v1"},
+    "project_id": {"type": "string", "pattern": "^[A-Za-z0-9_-]+$"},
+    "scene_id": {"type": "string", "pattern": "^[A-Za-z0-9_-]+$"},
+    "target_level": {"type": "string", "pattern": "^/Game/Developer/AIPlacementQA/[A-Za-z0-9_/-]+$"},
+    "units": {"const": "cm"},
+    "up_axis": {"const": "Z"},
+    "ground_plane": {"const": "XY"},
+    "reference_shot_manifest": {"type": ["string", "null"]},
+    "reference_status": {"enum": ["none", "approved"]},
+    "instances": {"type": "array", "minItems": 1, "maxItems": 500, "items": {
+      "type": "object",
+      "required": ["instance_id", "asset_id", "location_cm", "rotation_deg", "scale", "grounded", "orientation_mode"],
+      "properties": {
+        "instance_id": {"type": "string", "pattern": "^[A-Za-z0-9_-]+$"},
+        "asset_id": {"type": "string", "minLength": 1},
+        "location_cm": {"$ref": "#/$defs/vec3"},
+        "rotation_deg": {"$ref": "#/$defs/vec3"},
+        "scale": {"$ref": "#/$defs/positiveVec3"},
+        "grounded": {"type": "boolean"},
+        "orientation_mode": {"enum": ["world_axis_aligned", "free"]}
+      },
+      "additionalProperties": false
+    }},
+    "additionalProperties": false
+  },
+  "$defs": {
+    "vec3": {"type": "array", "items": {"type": "number"}, "minItems": 3, "maxItems": 3},
+    "positiveVec3": {"type": "array", "items": {"type": "number", "exclusiveMinimum": 0}, "minItems": 3, "maxItems": 3}
+  }
+}
