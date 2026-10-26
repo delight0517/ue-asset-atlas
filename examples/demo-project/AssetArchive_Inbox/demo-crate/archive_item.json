@@ -1,0 +1,19 @@
+{
+  "schema": "blacklion.asset-archive.item.v1",
+  "id": "demo_crate_v1",
+  "project_id": "demo_project",
+  "name": "Example Storage Crate",
+  "folder": "Example Props",
+  "kind": "object",
+  "status": "Example manifest — replace the placeholder source path.",
+  "source_file": "crate.blend",
+  "preview_fbx": "crate_preview.fbx",
+  "files": [
+    {"label": "Open Blender source", "path": "crate.blend"}
+  ],
+  "todos": [
+    "Inspect silhouette and scale in Unreal",
+    "Confirm material channels against source maps"
+  ],
+  "pbr_channels": ["base_color", "normal", "roughness"]
+}

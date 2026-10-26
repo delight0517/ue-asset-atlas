@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ue-asset-atlas.dev/schemas/project.schema.json",
+  "title": "Asset Archive Project Identity",
+  "type": "object",
+  "required": ["schema", "project_id"],
+  "properties": {
+    "schema": {"const": "blacklion.asset-archive.project.v1"},
+    "project_id": {"type": "string", "pattern": "^[A-Za-z0-9_-]+$"},
+    "display_name": {"type": "string"},
+    "units": {"type": "string"},
+    "up_axis": {"type": "string"},
+    "ground_plane": {"type": "string"},
+    "approved_source_roots": {"type": "array", "items": {"type": "string"}},
+    "source_blend": {"type": "string"}
+  },
+  "additionalProperties": true
+}

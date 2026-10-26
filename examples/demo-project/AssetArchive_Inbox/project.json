@@ -1,0 +1,9 @@
+{
+  "schema": "blacklion.asset-archive.project.v1",
+  "project_id": "demo_project",
+  "display_name": "Example Project",
+  "units": "centimeters",
+  "up_axis": "Z",
+  "ground_plane": "XY",
+  "approved_source_roots": []
+}

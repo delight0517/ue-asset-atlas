@@ -1,0 +1,23 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0.0",
+	"FriendlyName": "Black Lion Asset Archive",
+	"Description": "Shared, project-scoped visual asset archive and intake runtime for Unreal Engine 5.8.",
+	"Category": "Editor",
+	"CreatedBy": "Black Lion 3D Team",
+	"CanContainContent": true,
+	"IsBetaVersion": true,
+	"Modules": [
+		{
+			"Name": "BlackLionAssetArchiveCore",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "BlackLionAssetArchive",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}

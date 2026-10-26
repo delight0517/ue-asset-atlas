@@ -1,0 +1,17 @@
+Binaries/
+Intermediate/
+Saved/
+DerivedDataCache/
+.vs/
+.idea/
+*.sln
+*.suo
+*.user
+*.pdb
+*.obj
+*.dll
+*.lib
+Content/SharedAssets/**
+!Content/SharedAssets/.gitkeep
+__pycache__/
+*.py[cod]
