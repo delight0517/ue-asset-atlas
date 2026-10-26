@@ -8,7 +8,8 @@ Product site: [UE Asset Atlas](https://ue-asset-atlas.rogan2534.chatgpt.site) ·
 
 ## What it does
 
-- Browse archive entries in a small Unreal showroom and slowly rotate the selected preview.
+- Browse archive entries in a small Unreal showroom with paged lists; only the selected mesh is loaded and rotated.
+- Adapt thumbnail pixel caps, preview LOD and preview shadows to catalog size to reduce archive browsing cost.
 - Keep catalogs, collections, project IDs and TODO lists separate per Unreal project.
 - Link authoritative `.blend`, `.spp`, `.fbx`, `.uproject` and image sources.
 - Register existing `/Game/...` StaticMesh, Texture2D and Material object paths in place; registration does not copy those assets.
@@ -36,6 +37,14 @@ Product site: [UE Asset Atlas](https://ue-asset-atlas.rogan2534.chatgpt.site) ·
 
    The commandlet refuses to run if that project is open. It refreshes catalog metadata, imports only new stable FBX IDs, and writes a local receipt to prevent silent replacements.
 
+For a repeatable headless build and large-catalog QA run (with the target editor closed):
+
+```powershell
+.\Tools\run_archive_qa.ps1 -ProjectFile 'D:\Projects\MyGame\MyGame.uproject'
+```
+
+This verifies paging of 5,000 synthetic assets and adaptive preview limits. It does not replace visual in-editor review. See [performance QA](docs/PERFORMANCE_QA.md).
+
 See [Windows setup](docs/SETUP_WINDOWS.md) and [AI team workflow](docs/AI_TEAM_WORKFLOW.md) for the full steps.
 
 ## Sharing assets between projects
@@ -58,6 +67,7 @@ Copy the brief in [AI team workflow](docs/AI_TEAM_WORKFLOW.md) into your agent i
 - `Source/BlackLionAssetArchive`: showroom and UI.
 - `Tools/link_shared_plugin.ps1`: preview/apply a shared junction for a closed UE 5.8 project.
 - `Tools/sync_archive_project.ps1`: safe background commandlet guard and sync entry point.
+- `Tools/run_archive_qa.ps1`: optional UE 5.8 build plus headless automation checks for paging and adaptive preview policy.
 - `Tools/import_archive_assets.py`: generic per-project inbox importer (no bundled user's asset list).
 - `schemas/`, `examples/`, `docs/`: machine-readable contracts, synthetic sample and setup guidance.
 - `Content/SharedAssets/`: local shared assets live here when teams import them; project-specific assets are not bundled in this repository.

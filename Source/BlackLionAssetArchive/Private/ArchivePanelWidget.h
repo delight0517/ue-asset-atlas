@@ -34,11 +34,17 @@ private:
 	UVerticalBox* TodoList = nullptr;
 	UTextBlock* SelectedTitle = nullptr;
 	UTextBlock* SelectedStatus = nullptr;
+	UTextBlock* FolderPageStatus = nullptr;
+	UTextBlock* AssetPageStatus = nullptr;
+	UTextBlock* PreviewQualityStatus = nullptr;
 	UImage* PreviewImage = nullptr;
 	UPROPERTY(Transient)
 	TObjectPtr<UTexture2D> PreviewTexture;
 	UEditableTextBox* ProjectIdInput = nullptr;
 	TArray<FString> ActiveAssetIds;
+	int32 FolderPageIndex = 0;
+	int32 AssetPageIndex = 0;
+	int64 PreviewRequestSerial = 0;
 	FString ActiveFolderId;
 	FString ActiveProjectId;
 	FString SelectedAssetId;
