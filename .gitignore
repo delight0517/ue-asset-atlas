@@ -16,5 +16,6 @@ Content/SharedAssets/**
 portfolio.local.json
 portfolio-source/
 portfolio-public-build/
+/work/portfolio-package/
 __pycache__/
 *.py[cod]
