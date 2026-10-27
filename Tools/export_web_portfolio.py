@@ -46,7 +46,7 @@ def validate_selection(data: object) -> list[dict]:
     if not isinstance(assets, list) or not assets or len(assets) > MAX_ASSETS:
         raise ExportError(f"assets must contain 1 to {MAX_ASSETS} explicitly selected entries")
     seen: set[str] = set()
-    allowed = {"id", "name", "visibility", "description", "model_glb", "poster", "alt", "license", "attribution"}
+    allowed = {"id", "name", "visibility", "project_id", "project_name", "description", "model_glb", "poster", "alt", "license", "attribution"}
     for item in assets:
         if not isinstance(item, dict) or set(item) - allowed:
             raise ExportError("each asset must be an object containing only supported fields")
@@ -56,6 +56,12 @@ def validate_selection(data: object) -> list[dict]:
         if asset_id in seen:
             raise ExportError(f"duplicate asset id: {asset_id}")
         seen.add(asset_id)
+        project_id = item.get("project_id")
+        if project_id is not None and (not isinstance(project_id, str) or not ID_PATTERN.fullmatch(project_id)):
+            raise ExportError(f"{asset_id}: project_id may contain only letters, numbers, underscore, and hyphen")
+        project_name = item.get("project_name", "")
+        if not isinstance(project_name, str) or len(project_name) > 120:
+            raise ExportError(f"{asset_id}: project_name must be text up to 120 characters")
         if not isinstance(name, str) or not name.strip() or len(name) > 120:
             raise ExportError(f"{asset_id}: name must contain 1 to 120 characters")
         for field, limit in (("description", 1200), ("alt", 240), ("license", 160), ("attribution", 240)):
@@ -171,6 +177,10 @@ def package(selection_path: Path, source_root: Path, output: Path,
                 "poster_sha256": sha256(poster_dest), "license": item.get("license", ""),
                 "attribution": item.get("attribution", "")
             })
+            if item.get("project_id"):
+                exported[-1]["project_id"] = item["project_id"]
+                if item.get("project_name"):
+                    exported[-1]["project_name"] = item["project_name"]
         manifest = {"schema": SCHEMA, "title": data["title"], "visibility": "public", "loading": "per-asset",
                     "assets": exported, "asset_count": len(exported), "total_bytes": total_bytes}
         (temp_path / "portfolio.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

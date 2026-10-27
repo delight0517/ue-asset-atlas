@@ -47,6 +47,19 @@ class WebPortfolioExportTests(unittest.TestCase):
         ])
         self.assertNotIn("unselected", (self.output / "portfolio.json").read_text(encoding="utf-8"))
 
+    def test_preserves_explicit_project_group_metadata_in_public_derivative(self):
+        self.data["assets"][0].update(project_id="corridor-set", project_name="Corridor Set")
+        self.selection.write_text(json.dumps(self.data), encoding="utf-8")
+        result = exporter.package(self.selection, self.source, self.output)
+        self.assertEqual(result["assets"][0]["project_id"], "corridor-set")
+        self.assertEqual(result["assets"][0]["project_name"], "Corridor Set")
+
+    def test_rejects_invalid_project_group_id(self):
+        self.data["assets"][0]["project_id"] = "../private"
+        self.selection.write_text(json.dumps(self.data), encoding="utf-8")
+        with self.assertRaisesRegex(exporter.ExportError, "project_id"):
+            exporter.package(self.selection, self.source, self.output)
+
     def test_private_assets_are_excluded_from_public_build(self):
         private_model = self.source / "objects/private.glb"
         private_poster = self.source / "posters/private.webp"

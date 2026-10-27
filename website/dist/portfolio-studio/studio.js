@@ -1,6 +1,6 @@
 export const PORTFOLIO_SCHEMA = "blacklion.asset-archive.web-portfolio.v1";
 const ID_PATTERN = /^[A-Za-z0-9_-]+$/;
-const ALLOWED_FIELDS = new Set(["id", "name", "visibility", "model_glb", "poster", "description", "alt", "license", "attribution"]);
+const ALLOWED_FIELDS = new Set(["id", "name", "visibility", "project_id", "project_name", "model_glb", "poster", "description", "alt", "license", "attribution"]);
 
 export function isLocalOrigin(locationLike) {
   return locationLike?.protocol === "http:" && ["localhost", "127.0.0.1", "::1"].includes(locationLike.hostname);
@@ -22,6 +22,8 @@ export function validateSelection(value) {
       throw new Error("오브젝트 ID가 잘못되었거나 중복되었습니다.");
     }
     ids.add(item.id);
+    if (item.project_id !== undefined && (typeof item.project_id !== "string" || !ID_PATTERN.test(item.project_id))) throw new Error(`오브젝트 ${item.id}의 프로젝트 ID는 영문·숫자·_·-만 사용할 수 있습니다.`);
+    if (item.project_name !== undefined && (typeof item.project_name !== "string" || item.project_name.length > 120)) throw new Error(`오브젝트 ${item.id}의 프로젝트 이름이 올바르지 않습니다.`);
     if (typeof item.name !== "string" || !item.name.trim() || item.name.length > 120) {
       throw new Error(`오브젝트 ${item.id}의 이름이 올바르지 않습니다.`);
     }
@@ -134,7 +136,26 @@ function initStudio() {
         markChanged();
       });
       setting.append(select);
-      row.append(nameBlock, setting);
+      const project = node("label", "asset-visibility", "프로젝트 묶음 ID");
+      const projectInput = document.createElement("input");
+      projectInput.type = "text";
+      projectInput.value = asset.project_id || "";
+      projectInput.maxLength = 80;
+      projectInput.placeholder = "예: corridor-set";
+      projectInput.setAttribute("aria-label", `${asset.name} 프로젝트 묶음 ID`);
+      projectInput.addEventListener("change", () => {
+        const value = projectInput.value.trim();
+        if (value && !ID_PATTERN.test(value)) {
+          projectInput.value = asset.project_id || "";
+          setStatus(status, "프로젝트 ID는 영문·숫자·밑줄·하이픈만 사용할 수 있습니다.", "error");
+          return;
+        }
+        if (value) asset.project_id = value;
+        else delete asset.project_id;
+        markChanged();
+      });
+      project.append(projectInput);
+      row.append(nameBlock, setting, project);
       list.append(row);
     }
   }

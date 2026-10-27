@@ -16,13 +16,16 @@ export function validatePortfolioManifest(value) {
       throw new Error("포트폴리오에 잘못되었거나 중복된 오브젝트 ID가 있습니다.");
     }
     ids.add(asset.id);
+    if (asset.project_id !== undefined && (typeof asset.project_id !== "string" || !ID_PATTERN.test(asset.project_id))) {
+      throw new Error(`오브젝트 ${asset.id}의 project_id가 올바르지 않습니다.`);
+    }
     if (typeof asset.name !== "string" || !asset.name.trim() || !MODEL_PATTERN.test(asset.model) || !POSTER_PATTERN.test(asset.poster)) {
       throw new Error(`오브젝트 ${asset.id}의 이름이나 로컬 미디어 경로가 올바르지 않습니다.`);
     }
     if (MODEL_PATTERN.exec(asset.model)[1] !== asset.id || POSTER_PATTERN.exec(asset.poster)[1] !== asset.id) {
       throw new Error(`오브젝트 ${asset.id}의 파일 경로가 해당 오브젝트 폴더를 벗어났습니다.`);
     }
-    for (const field of ["description", "alt", "license", "attribution"]) {
+    for (const field of ["description", "alt", "license", "attribution", "project_name"]) {
       if (asset[field] !== undefined && typeof asset[field] !== "string") {
         throw new Error(`오브젝트 ${asset.id}의 ${field} 값은 문자열이어야 합니다.`);
       }
@@ -53,6 +56,8 @@ function createElement(tag, className, text = "") {
 
 async function loadPortfolio() {
   const grid = document.getElementById("asset-grid");
+  const projectCollection = document.getElementById("project-collection");
+  const projectGrid = document.getElementById("project-grid");
   const count = document.getElementById("asset-count");
   const status = document.getElementById("load-status");
   const title = document.getElementById("portfolio-title");
@@ -200,6 +205,77 @@ async function loadPortfolio() {
       button.addEventListener("click", () => selectAsset(asset, button));
       buttons.push(button);
       grid.append(button);
+    }
+    const projects = new Map();
+    for (const asset of manifest.assets) {
+      if (!asset.project_id) continue;
+      if (!projects.has(asset.project_id)) projects.set(asset.project_id, []);
+      projects.get(asset.project_id).push(asset);
+    }
+    if (projects.size) {
+      projectCollection.hidden = false;
+      for (const [projectId, assets] of projects) {
+        if (assets.length < 2) continue;
+        const button = createElement("button", "asset-card project-card");
+        button.type = "button";
+        button.setAttribute("aria-label", `${projectId} 프로젝트 오브젝트 ${assets.length}개 함께 보기`);
+        const poster = createElement("img", "asset-poster");
+        poster.src = new URL(assets[0].poster, manifestUrl).href;
+        poster.alt = "";
+        poster.loading = "lazy";
+        poster.decoding = "async";
+        const body = createElement("span", "asset-card-body");
+        body.append(createElement("span", "asset-card-name", assets[0].project_name || projectId), createElement("span", "asset-card-hint", `프로젝트 오브젝트 ${assets.length}개 함께 보기`));
+        button.append(poster, body);
+        button.addEventListener("click", () => {
+          selectionVersion++;
+          const groupVersion = selectionVersion;
+          currentAsset = null;
+          releaseViewer();
+          detail.hidden = false;
+          detailTitle.textContent = assets[0].project_name || `${projectId} 프로젝트`;
+          detailDescription.textContent = `같은 프로젝트의 공개 프리뷰 ${assets.length}개를 한 화면에서 확인합니다. 3D 모델은 버튼을 누를 때만 불러옵니다.`;
+          detailCredits.replaceChildren(createElement("span", "", `프로젝트 ID · ${projectId}`));
+          loadButton.disabled = false;
+          loadButton.textContent = `프로젝트 오브젝트 ${assets.length}개 불러오기`;
+          for (const item of buttons) item.setAttribute("aria-pressed", "false");
+          loadButton.onclick = async () => {
+            loadButton.disabled = true;
+            loadButton.textContent = "프로젝트 모델을 불러오는 중…";
+            setStatus(viewerStatus, `공개 프리뷰 ${assets.length}개를 준비하고 있습니다…`);
+            try {
+              await ensureViewerLibrary();
+              if (selectionVersion !== groupVersion || currentAsset) return;
+              const tiles = document.createElement("div");
+              tiles.className = "project-viewer-grid";
+              for (const asset of assets) {
+                const tile = document.createElement("article");
+                tile.className = "project-viewer-tile";
+                tile.append(createElement("h3", "", asset.name));
+                const viewer = document.createElement("model-viewer");
+                viewer.className = "portfolio-model";
+                viewer.setAttribute("alt", asset.alt || asset.name);
+                viewer.setAttribute("camera-controls", "");
+                viewer.setAttribute("loading", "lazy");
+                viewer.setAttribute("poster", new URL(asset.poster, manifestUrl).href);
+                viewer.src = new URL(asset.model, manifestUrl).href;
+                tile.append(viewer);
+                tiles.append(tile);
+              }
+              viewerStage.replaceChildren(tiles);
+              currentViewer = null;
+              loadButton.textContent = "프로젝트 전체 표시 중";
+              setStatus(viewerStatus, `프로젝트 오브젝트 ${assets.length}개를 함께 표시합니다.`);
+            } catch (error) {
+              loadButton.disabled = false;
+              setStatus(viewerStatus, error instanceof Error ? error.message : "프로젝트 미리보기를 불러오지 못했습니다.", "error");
+            }
+          };
+          detail.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "nearest" });
+        });
+        projectGrid.append(button);
+      }
+      if (!projectGrid.childElementCount) projectCollection.hidden = true;
     }
     setStatus(status, manifest.assets.length ? "오브젝트를 선택하면 상세 정보를 볼 수 있습니다." : "공개할 오브젝트를 선택하면 이곳에 표시됩니다.");
   } catch (error) {

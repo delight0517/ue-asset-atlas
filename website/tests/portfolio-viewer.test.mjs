@@ -20,6 +20,19 @@ test("validates the per-object manifest and formats optimized payload sizes", ()
   assert.equal(app.formatBytes(2 * 1024 * 1024), "2.0 MiB");
 });
 
+test("groups only assets with the same validated project ID and keeps group models lazy", () => {
+  const group = { ...sample, assets: [
+    { ...sample.assets[0], id: "sample-a", model: "assets/sample-a/model.glb", poster: "assets/sample-a/poster.webp", project_id: "corridor" },
+    { ...sample.assets[0], id: "sample-b", model: "assets/sample-b/model.glb", poster: "assets/sample-b/poster.webp", project_id: "corridor" },
+    { ...sample.assets[0], id: "sample-c", model: "assets/sample-c/model.glb", poster: "assets/sample-c/poster.webp", project_id: "other" }
+  ] };
+  assert.equal(app.validatePortfolioManifest(group), group);
+  assert.throws(() => app.validatePortfolioManifest({ ...group, assets: [{ ...group.assets[0], project_id: "../private" }] }), /project_id/);
+  assert.match(source, /프로젝트 오브젝트 \$\{assets.length\}개 불러오기/);
+  assert.match(source, /viewer\.src = new URL\(asset\.model, manifestUrl\)\.href/);
+  assert.match(source, /loading", "lazy"/);
+});
+
 test("rejects external, mismatched, and duplicate object paths", () => {
   assert.throws(() => app.validatePortfolioManifest({ ...sample, assets: [{ ...sample.assets[0], model: "https://example.com/model.glb" }] }), /로컬 미디어 경로/);
   assert.throws(() => app.validatePortfolioManifest({ ...sample, assets: [{ ...sample.assets[0], model: "assets/other/model.glb" }] }), /오브젝트 폴더를 벗어났습니다/);
@@ -32,7 +45,7 @@ test("does not request model URLs until the user clicks the explicit viewer acti
   const handlerStart = source.indexOf("async function loadSelectedModel()");
   const handlerEnd = source.indexOf('loadButton.addEventListener("click", loadSelectedModel)', handlerStart);
   assert.ok(validation >= 0 && handlerStart >= 0 && modelAssignment > handlerStart && modelAssignment < handlerEnd);
-  assert.equal((source.match(/viewer\.src = new URL\(asset\.model/g) || []).length, 1);
+  assert.equal((source.match(/viewer\.src = new URL\(asset\.model/g) || []).length, 2);
   assert.match(source, /poster\.loading = "lazy"/);
   assert.match(source, /currentViewer\.removeAttribute\("src"\)/);
   assert.match(source, /vendor\/model-viewer\.min\.js/);

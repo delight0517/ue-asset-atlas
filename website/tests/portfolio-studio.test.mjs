@@ -23,6 +23,15 @@ test("accepts only explicit selection files and serializes the visibility update
   assert.match(app.serializeSelection(valid), /\n$/);
 });
 
+test("preserves a validated project grouping ID in the editable local selection", () => {
+  const grouped = structuredClone(valid);
+  grouped.assets[0].project_id = "corridor-set";
+  assert.equal(app.validateSelection(grouped), grouped);
+  assert.equal(JSON.parse(app.serializeSelection(grouped)).assets[0].project_id, "corridor-set");
+  assert.throws(() => app.validateSelection({ ...valid, assets: [{ ...valid.assets[0], project_id: "../private" }] }), /프로젝트 ID/);
+  assert.match(source, /프로젝트 묶음 ID/);
+});
+
 test("rejects malformed, duplicate, unsupported, or ambiguous visibility entries", () => {
   assert.throws(() => app.validateSelection({ ...valid, schema: "other" }), /스키마/);
   assert.throws(() => app.validateSelection({ ...valid, assets: [{ ...valid.assets[0], visibility: "public-ish" }] }), /공개 범위/);

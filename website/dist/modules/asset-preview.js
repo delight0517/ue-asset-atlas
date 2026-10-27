@@ -186,7 +186,7 @@ export function init(ctx, restored = {}) {
     const z=norm(sub(eye,center)),x=norm(cross(up,z)),y=cross(z,x);
     return new Float32Array([x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-x.reduce((s,v,i)=>s+v*eye[i],0),-y.reduce((s,v,i)=>s+v*eye[i],0),-z.reduce((s,v,i)=>s+v*eye[i],0),1]);
   }
-  let yaw=Number.isFinite(restored.yaw)?restored.yaw:-.36,pitch=Number.isFinite(restored.pitch)?restored.pitch:.22,drag=false,lastX=0,lastY=0,selectedName=restored.selectedName||objectSelect?.value||"crate";
+  let yaw=Number.isFinite(restored.yaw)?restored.yaw:-.36,pitch=Number.isFinite(restored.pitch)?restored.pitch:.22,panX=Number.isFinite(restored.panX)?restored.panX:0,panY=Number.isFinite(restored.panY)?restored.panY:0,drag=false,dragMode="orbit",lastX=0,lastY=0,selectedName=restored.selectedName||objectSelect?.value||"crate";
   if(objectSelect)objectSelect.value=selectedName;
   const selectedPart=()=>parts.find(part=>part.name===selectedName);
   function syncObjectControls(){
@@ -228,7 +228,7 @@ export function init(ctx, restored = {}) {
     resize();
     gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
     if(!drag&&!reduced)yaw+=.00026*(now-frame||16);frame=now;
-    const viewProjection=multiply(perspective(.78,canvas.width/canvas.height,.1,40),lookAt([0,1.45,5.4],[0,-.08,0],[0,1,0]));
+    const viewProjection=multiply(perspective(.78,canvas.width/canvas.height,.1,40),lookAt([panX,1.45+panY,5.4],[panX,-.08+panY,0],[0,1,0]));
     gl.uniformMatrix4fv(uniforms.vp,false,viewProjection);
     const base=multiply(translate(0,0,0),multiply(rotateY(yaw),rotateX(pitch)));
     const rotationMatrix=angle=>new Float32Array([Math.cos(angle),0,-Math.sin(angle),0,0,1,0,0,Math.sin(angle),0,Math.cos(angle),0,0,0,0,1]);
@@ -266,15 +266,16 @@ export function init(ctx, restored = {}) {
     observer.observe(canvas);
   }
   on(document,"visibilitychange",()=>document.hidden?stop():start());
-  on(canvas,"pointerdown",e=>{drag=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId);});
-  on(canvas,"pointermove",e=>{if(!drag)return;yaw+=(e.clientX-lastX)*.009;pitch=Math.max(-.65,Math.min(.72,pitch+(e.clientY-lastY)*.008));lastX=e.clientX;lastY=e.clientY;if(reduced)requestAnimationFrame(now=>draw(now,false));});
-  on(canvas,"pointerup",()=>{drag=false;});
-  on(canvas,"pointercancel",()=>{drag=false;});
-  if(reset)on(reset,"click",()=>{yaw=-.36;pitch=.22;if(reduced)requestAnimationFrame(draw);});
+  on(canvas,"contextmenu",e=>e.preventDefault());
+  on(canvas,"pointerdown",e=>{if(e.button!==0&&e.button!==1)return;drag=true;dragMode=e.button===1?"pan":"orbit";if(dragMode==="pan")e.preventDefault();lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId);});
+  on(canvas,"pointermove",e=>{if(!drag)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;if(dragMode==="pan"){panX-=dx/Math.max(1,canvas.clientWidth)*4.2;panY+=dy/Math.max(1,canvas.clientHeight)*3.2;}else{yaw+=dx*.009;pitch=Math.max(-.65,Math.min(.72,pitch+dy*.008));}lastX=e.clientX;lastY=e.clientY;if(reduced)requestAnimationFrame(now=>draw(now,false));});
+  on(canvas,"pointerup",()=>{drag=false;dragMode="orbit";});
+  on(canvas,"pointercancel",()=>{drag=false;dragMode="orbit";});
+  if(reset)on(reset,"click",()=>{yaw=-.36;pitch=.22;panX=0;panY=0;if(reduced)requestAnimationFrame(draw);});
   if(!("IntersectionObserver" in window)){inViewport=true;start();}
   else if(document.hidden)start();
   return {
-    snapshot: () => ({ qualityMode, yaw, pitch, selectedName, transforms: Object.fromEntries(parts.map(part => [part.name, { ...part.transform }])) }),
+    snapshot: () => ({ qualityMode, yaw, pitch, panX, panY, selectedName, transforms: Object.fromEntries(parts.map(part => [part.name, { ...part.transform }])) }),
     canReload: () => !drag && !document.hidden && ![qualitySelect, objectSelect, ...Object.values(objectControls)].includes(document.activeElement),
     dispose: () => { running=false; cancelAnimationFrame(frameHandle); observer?.disconnect(); listeners.abort(); for(const part of parts)gl.deleteBuffer(part.buffer); gl.deleteProgram(program); }
   };
