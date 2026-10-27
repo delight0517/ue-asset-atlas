@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ue-asset-atlas.dev/schemas/web-portfolio.schema.json",
+  "title": "Explicitly selected static 3D portfolio export",
+  "type": "object",
+  "required": ["schema", "title", "assets"],
+  "properties": {
+    "schema": {"const": "blacklion.asset-archive.web-portfolio.v1"},
+    "title": {"type": "string", "minLength": 1, "maxLength": 120},
+    "assets": {
+      "type": "array", "minItems": 1, "maxItems": 100,
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "visibility", "model_glb", "poster"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[A-Za-z0-9_-]+$"},
+          "name": {"type": "string", "minLength": 1, "maxLength": 120},
+          "visibility": {"enum": ["public", "private"]},
+          "description": {"type": "string", "maxLength": 1200},
+          "model_glb": {"type": "string", "minLength": 1},
+          "poster": {"type": "string", "minLength": 1},
+          "alt": {"type": "string", "maxLength": 240},
+          "license": {"type": "string", "maxLength": 160},
+          "attribution": {"type": "string", "maxLength": 240}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

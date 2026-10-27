@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10151c">
+  <meta name="robots" content="noindex,nofollow">
+  <title>로컬 포트폴리오 설정 · UE Asset Atlas</title>
+  <link rel="stylesheet" href="./studio.css">
+  <script type="module" src="./studio.js"></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="page-head">
+      <a class="back-link" href="../">← UE Asset Atlas</a>
+      <p class="eyebrow">LOCAL PORTFOLIO SETTINGS</p>
+      <h1>웹에 보여줄<br><span>오브젝트를 고르세요.</span></h1>
+      <p class="lede">이 화면은 로컬 선택 파일의 공개 범위만 바꿉니다. 모델과 포스터를 읽거나 업로드하지 않습니다.</p>
+    </header>
+
+    <section class="notice notice-local" id="local-only-notice" hidden>
+      <strong>로컬에서만 사용할 수 있습니다.</strong>
+      <p>브라우저에서 http://127.0.0.1:8765/portfolio-studio/ 를 열어주세요. 다른 공개 사이트에서는 파일 선택과 저장을 사용할 수 없습니다.</p>
+    </section>
+
+    <section class="notice notice-privacy" aria-labelledby="privacy-title">
+      <h2 id="privacy-title">공개와 비공개</h2>
+      <p><b>공개</b>로 표시한 항목만 나중에 저용량 웹 파생본 패키지에 포함됩니다. 이 설정 화면이 GitHub에 파일을 올리지는 않습니다.</p>
+      <p><b>비공개</b> 항목은 공개 패키지에서 제외됩니다. 이미 웹에 공개된 모델을 비공개로 바꿔도 내려받은 파일, 복사본, 캐시까지 회수되지는 않습니다.</p>
+    </section>
+
+    <section class="workspace" aria-labelledby="selection-title">
+      <div class="workspace-head">
+        <div><p class="eyebrow">LOCAL SELECTION FILE</p><h2 id="selection-title">포트폴리오 선택</h2></div>
+        <button class="button button-primary" id="open-file" type="button">선택 파일 열기</button>
+      </div>
+      <label class="fallback-picker" id="fallback-picker" hidden>
+        <span>읽기 전용 파일 선택</span>
+        <input id="file-input" type="file" accept="application/json,.json">
+      </label>
+      <div class="file-meta" id="file-meta">아직 선택 파일을 열지 않았습니다.</div>
+      <div class="summary" id="summary" hidden>
+        <span><b id="total-count">0</b>개 오브젝트</span>
+        <span><b id="public-count">0</b>개 공개 예정</span>
+        <span><b id="private-count">0</b>개 로컬 전용</span>
+      </div>
+      <div class="asset-list" id="asset-list" aria-live="polite"></div>
+      <div class="actions">
+        <button class="button button-primary" id="save-file" type="button" disabled>선택 파일에 저장</button>
+        <button class="button button-secondary" id="download-file" type="button" disabled>수정본 JSON 다운로드</button>
+      </div>
+      <p class="status" id="status" role="status" aria-live="polite">로컬 전용 설정 화면입니다. 선택 파일은 저장을 누르기 전까지 변경되지 않습니다.</p>
+    </section>
+
+    <footer>
+      <p>AI 또는 사용자가 이 로컬 JSON을 수정할 수 있습니다. 현재 제품에는 내장 AI 계정 연결, GitHub 업로드, 예약 동기화가 없습니다.</p>
+      <p>공개 웹사이트는 이 설정 파일이 아니라 공개로 선택한 파생본만 받아야 합니다.</p>
+    </footer>
+  </main>
+</body>
+</html>

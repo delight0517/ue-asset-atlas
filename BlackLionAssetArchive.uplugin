@@ -18,6 +18,11 @@
 			"Name": "BlackLionAssetArchive",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "BlackLionAssetArchiveEditor",
+			"Type": "Editor",
+			"LoadingPhase": "PostEngineInit"
 		}
 	]
 }

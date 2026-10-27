@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10151c">
+  <meta name="description" content="가볍게 둘러보는 3D 포트폴리오입니다. 오브젝트를 선택하면 인터랙티브 미리보기를 불러옵니다.">
+  <title>3D 포트폴리오</title>
+  <link rel="stylesheet" href="./portfolio.css">
+  <script type="module" src="./portfolio.js"></script>
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="./" aria-label="3D 포트폴리오 홈"><span class="mark" aria-hidden="true">◈</span>OBJECT<span>ATLAS</span></a>
+    <span class="masthead-note">선별한 컬렉션 · 오브젝트 하나씩 보기</span>
+  </header>
+  <main class="page-shell">
+    <section class="intro" aria-labelledby="portfolio-title">
+      <p class="eyebrow">개인 3D 포트폴리오</p>
+      <h1 id="portfolio-title">오브젝트를 <span>하나씩.</span></h1>
+      <p class="intro-copy">먼저 이미지를 둘러보세요. 선택한 오브젝트의 3D 미리보기만 불러옵니다.</p>
+      <div class="collection-meta"><span id="asset-count">컬렉션을 불러오는 중…</span><span class="meta-divider" aria-hidden="true"></span><span>3D 모델은 선택한 뒤 불러옵니다</span></div>
+    </section>
+
+    <section class="collection" aria-label="선별한 오브젝트">
+      <div class="collection-heading"><h2>선별한 작업물</h2><p id="collection-note">이미지를 둘러보는 동안 3D 모델은 내려받지 않습니다.</p></div>
+      <div id="asset-grid" class="asset-grid" aria-live="polite" aria-busy="true"></div>
+      <p id="load-status" class="status-line" role="status" aria-live="polite">공개 컬렉션을 확인하고 있습니다…</p>
+    </section>
+
+    <section id="object-detail" class="detail" aria-labelledby="detail-title" hidden>
+      <div class="detail-copy">
+        <p class="eyebrow">오브젝트 뷰어</p>
+        <h2 id="detail-title">오브젝트를 선택하세요</h2>
+        <p id="detail-description" class="detail-description"></p>
+        <div class="detail-credits" id="detail-credits"></div>
+        <button id="load-model" class="load-button" type="button" disabled>3D 미리보기 불러오기</button>
+        <p id="viewer-status" class="viewer-status" role="status" aria-live="polite">3D 모델을 아직 불러오지 않았습니다.</p>
+      </div>
+      <div id="viewer-stage" class="viewer-stage" aria-label="인터랙티브 오브젝트 미리보기">
+        <div class="poster-placeholder"><span class="poster-glyph" aria-hidden="true">◈</span><span>오브젝트를 선택한 다음 3D 미리보기를 불러오세요.</span></div>
+      </div>
+    </section>
+    <footer class="page-footer"><span>직접 공개하도록 선택한 최적화 파생본만 표시됩니다.</span><span id="footer-title">정적 포트폴리오</span></footer>
+  </main>
+</body>
+</html>

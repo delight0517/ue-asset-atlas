@@ -60,3 +60,18 @@ Read the command output and `GameA/Saved/BlackLionAssetArchive/sync.log`. The pr
 ## Team workflow
 
 Store the shared plugin checkout in a version-controlled team location. Keep each project's identity/catalog/TODOs with that project; agree on one canonical `project_id` per team project. Do not put FBX, `.blend`, `.spp`, credentials or private project folders into a public fork.
+
+## Unreal Editor hot reload (Windows / UE 5.8)
+
+The `BlackLionAssetArchiveEditor` module adds an opt-in Live Coding watcher for the shared plugin source. Build the plugin once and start the consuming project with Live Coding available. In that Editor session's Output Log console, run:
+
+```text
+BlackLionAssetArchive.HotReload.Status
+BlackLionAssetArchive.HotReload.Enable
+```
+
+While enabled, a plugin `.cpp` save that stays unchanged for 1.25 seconds requests one Live Coding compile. Use `BlackLionAssetArchive.HotReload.Disable` to stop automatic requests, `BlackLionAssetArchive.HotReload.Compile` for one manual compile, and `BlackLionAssetArchive.HotReload.Status` to inspect the session state. Auto compile starts disabled on every Editor session. The watcher only handles this plugin's `Source` tree and requires the Editor's Live Coding feature to be usable.
+
+Changes to `.h` files are held for review and require the manual command; reflected type layout or unsafe object reinstancing may still require closing and reopening the Editor. Changes to `.Build.cs` or `BlackLionAssetArchive.uplugin` mark the session restart-required and are not patched. Close the project before rebuilding or changing plugin setup. Use one Editor process per shared source checkout so two processes do not compile the same files concurrently. Catalog JSON/manifest edits remain a data sync and do not need a C++ compile.
+
+The automated UE 5.8 `BuildPlugin` Win64 package check validates compilation, not a live Editor patch. Test the commands and a representative `.cpp`/`.h` edit in the exact consuming project before adopting them in a team workflow.

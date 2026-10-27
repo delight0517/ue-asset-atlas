@@ -1,0 +1,11 @@
+{
+  "contractVersion": 1,
+  "modules": [
+    { "id": "asset-preview", "src": "/modules/asset-preview.js", "hash": "asset-preview-v1" },
+    { "id": "manifest-copy", "src": "/modules/manifest-copy.js", "hash": "manifest-copy-v1" }
+  ],
+  "styles": [
+    { "id": "site-theme", "src": "/styles.css", "hash": "site-theme-v1" },
+    { "id": "asset-preview", "src": "/modules/asset-preview.css", "hash": "asset-preview-css-v1" }
+  ]
+}

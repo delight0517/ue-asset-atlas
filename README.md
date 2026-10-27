@@ -58,6 +58,10 @@ The second command runs only with the target Unreal project closed and only writ
 
 See [Windows setup](docs/SETUP_WINDOWS.md) and [AI team workflow](docs/AI_TEAM_WORKFLOW.md) for the full steps.
 
+On Windows/UE 5.8, the editor-only hot-reload coordinator can watch stable plugin `.cpp` saves and request Live Coding after you run `BlackLionAssetArchive.HotReload.Enable` in the Editor console. It starts disabled each session. Header changes require a manual compile/review and may need an Editor restart; `.Build.cs` and plugin descriptor changes require a restart. See [Unreal Editor hot reload setup](docs/SETUP_WINDOWS.md#unreal-editor-hot-reload-windows--ue-58) for commands and limits.
+
+The repository also has an individual-object portfolio path: local source files stay canonical; an ignored selection file marks objects public or private; only public, web-ready GLB derivatives and posters enter the export. The static viewer loads one GLB after the visitor asks to inspect it. The exporter validates the size budget but does not optimize geometry itself. See [individual-object portfolio exports](docs/WEB_PORTFOLIO.md).
+
 ## Sharing assets between projects
 
 The plugin source and its Content mount are shared through one physical plugin directory. For a new FBX preview, sync imports once under `/BlackLionAssetArchive/SharedAssets/<project-id>/`; projects using the same plugin junction can reference that UAsset package. Each project's `Saved/BlackLionAssetArchive/catalog.json` and collections stay local and project-scoped.
@@ -76,9 +80,11 @@ Copy the brief in [AI team workflow](docs/AI_TEAM_WORKFLOW.md) into your agent i
 
 - `Source/BlackLionAssetArchiveCore`: project identity, catalog validation and collection data.
 - `Source/BlackLionAssetArchive`: showroom and UI.
+- `Source/BlackLionAssetArchiveEditor`: opt-in Windows Live Coding watcher and editor-session commands.
 - `Tools/link_shared_plugin.ps1`: preview/apply a shared junction for a closed UE 5.8 project.
 - `Tools/sync_archive_project.ps1`: safe background commandlet guard and sync entry point.
 - `Tools/run_archive_qa.ps1`: optional UE 5.8 build plus headless automation checks for paging and adaptive preview policy.
+- `Tools/export_web_portfolio.py`: package an explicit allowlist of web-ready GLB derivatives and posters into a small static portfolio payload.
 - `Tools/scene_layout.py` / `Tools/apply_scene_layout.ps1`: validate and batch-place catalog assets in an isolated QA level; `apply_scene_layout.py` is the UE-side executor.
 - `schemas/scene-layout.schema.json`: units, axes, stable IDs, transforms and optional approved reference shot contract.
 - `Tools/import_archive_assets.py`: generic per-project inbox importer (no bundled user's asset list).

@@ -1,0 +1,17 @@
+{
+  "schema": "blacklion.asset-archive.web-portfolio.v1",
+  "title": "Selected 3D work",
+  "assets": [
+    {
+      "id": "sample-crate",
+      "name": "Sample Crate",
+      "visibility": "public",
+      "description": "Synthetic fixture only. Replace these paths with an approved web export.",
+      "model_glb": "objects/sample-crate.glb",
+      "poster": "posters/sample-crate.webp",
+      "alt": "Sample crate 3D asset preview",
+      "license": "CC BY 4.0",
+      "attribution": "Example author"
+    }
+  ]
+}

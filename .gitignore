@@ -13,5 +13,8 @@ DerivedDataCache/
 *.lib
 Content/SharedAssets/**
 !Content/SharedAssets/.gitkeep
+portfolio.local.json
+portfolio-source/
+portfolio-public-build/
 __pycache__/
 *.py[cod]

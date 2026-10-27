@@ -9,3 +9,5 @@ The schema files are the canonical machine-readable format. Keep project IDs uni
 - `source_file`, `files[].path`, and `thumbnail` resolve only under the inbox, project root, shared plugin or explicitly listed `approved_source_roots`.
 
 There is no cloud service or account sync in this release. Catalog JSON is generated per-project by the Unreal commandlet and shared through that project's normal files/backups.
+
+`web-portfolio.schema.json` is a separate, explicit allowlist of web-ready derivatives for a future static portfolio. It is not part of Unreal catalog sync. Only listed GLBs and poster images enter an export package; project folders, FBX sources, and other catalog records are not included.

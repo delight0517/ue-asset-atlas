@@ -1,0 +1,9 @@
+{
+  "schema": "blacklion.asset-archive.web-portfolio.v1",
+  "title": "개인 3D 포트폴리오",
+  "visibility": "public",
+  "loading": "per-asset",
+  "assets": [],
+  "asset_count": 0,
+  "total_bytes": 0
+}
